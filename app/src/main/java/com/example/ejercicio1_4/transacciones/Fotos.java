@@ -3,20 +3,25 @@ package com.example.ejercicio1_4.transacciones;
 import java.sql.Blob;
 
 public class Fotos {
-    public Integer id;
-    private Blob imagen;
 
-    private String Nombre;
-    private String Description;
 
-    public Fotos(Integer id, Blob imagen , String Nombre , String Description){
+    public Fotos(Integer id,  String Nombre , String descripcion,  Blob imagen ){
         this.id = id;
-        this.imagen = imagen;
         this.Nombre = Nombre;
-        this.Description = Description;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
 
     }
 
+    private Integer id;
+    private Blob imagen;
+
+    private String Nombre;
+    private String descripcion;
+
+    public Fotos(){
+
+    }
     public Integer getId() {
         return id;
     }
@@ -42,11 +47,11 @@ public class Fotos {
     }
 
     public String getDescription() {
-        return Description;
+        return descripcion;
     }
 
-    public void setDescription(String description) {
-        Description = description;
+    public void setDescription(String descripcion) {
+        this.descripcion = descripcion;
     }
 
 

@@ -37,7 +37,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
 
-    EditText nombre, descripcion;
+    EditText Nombre, descripcion;
     ImageView picture;
     Bitmap image;
     Button tomarfoto, guardar, verregistros;
@@ -45,14 +45,13 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE = 101;
     static final int PETICION_ACCESS_CAM = 201;
 
-    SQLiteDatabase bsd;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        nombre = (EditText) findViewById(R.id.txtnombre);
+        Nombre = (EditText) findViewById(R.id.txtnombre);
         descripcion = (EditText) findViewById(R.id.txtdescripcion);
         picture = (ImageView) findViewById(R.id.imageView);
         tomarfoto = (Button) findViewById(R.id.tomarfoto);
@@ -73,10 +72,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        verregistros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ActivityListaFotos.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void validacion() {
-        if (nombre.getText().toString().equals(Transacciones.Empty)){
+        if (Nombre.getText().toString().equals(Transacciones.Empty)){
             Toast.makeText(getApplicationContext(), "Debe de escribir un nombre" ,Toast.LENGTH_LONG).show();
         }else if (descripcion.getText().toString().equals(Transacciones.Empty)){
             Toast.makeText(getApplicationContext(), "Debe de escribir un telefono" ,Toast.LENGTH_LONG).show();
@@ -86,32 +92,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void GuardarFoto(Bitmap image) {
+    private void GuardarFoto(Bitmap imagen) {
      try{
          conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
-         bsd = conexion.getWritableDatabase();
+         SQLiteDatabase  db = conexion.getWritableDatabase();
          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-         image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+         imagen.compress(Bitmap.CompressFormat.JPEG, 100, stream);
          byte[] ArrayImagen  = stream.toByteArray();
 
          ContentValues valores = new ContentValues();
 
-         valores.put(Transacciones.Nombre, nombre.getText().toString());
-         valores.put(Transacciones.Description, descripcion.getText().toString());
+         valores.put("Nombre", Nombre.getText().toString());
+         valores.put("descripcion", descripcion.getText().toString());
          valores.put(String.valueOf(Transacciones.imagen),ArrayImagen);
 
-         Long resultado = bsd.insert(Transacciones.tablafoto, Transacciones.id, valores);
+         Long resultado = db.insert(Transacciones.tablafotos, "id", valores);;
 
-         Toast.makeText(getApplicationContext(), "Registro ingreso con exito, Codigo " + resultado.toString()
+         Toast.makeText(getApplicationContext(), "Foto ingresasada con exito, Codigo:  " + resultado.toString()
                  ,Toast.LENGTH_LONG).show();
-         bsd.close();
+         db.close();
      }catch (Exception ex){
          Toast.makeText(getApplicationContext(),"Se produjo un error",Toast.LENGTH_LONG).show();
      }
+        ClearScreen();
     }
 
     private void permisos() {
-        // Metodo para obtener los permisos requeridos de la aplicacion
         if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PETICION_ACCESS_CAM);
         } else {
@@ -119,33 +125,34 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        ClearScreen();
     }
 
-    private void ClearScreen() {
-        nombre.setText("");
-        descripcion.setText("");
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-    }
+        if (requestCode == PETICION_ACCESS_CAM) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent();
 
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.toString();
+            } else {
+                Toast.makeText(getApplicationContext(), "se necesita el permiso de la camara", Toast.LENGTH_LONG).show();
             }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.pm2e100970094.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_IMAGE) {
+
+            try {
+                File foto = new File(currentPhotoPath);
+                image = BitmapFactory.decodeFile(foto.getAbsolutePath());
+                picture.setImageURI(Uri.fromFile(foto));
+            } catch (Exception ex) {
+                ex.toString();
             }
         }
     }
@@ -166,34 +173,33 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE) {
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
+            File photoFile = null;
             try {
-                File foto = new File(currentPhotoPath);
-                image = BitmapFactory.decodeFile(foto.getAbsolutePath());
-                picture.setImageURI(Uri.fromFile(foto));
-            } catch (Exception ex) {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
                 ex.toString();
             }
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == PETICION_ACCESS_CAM) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent();
-
-            } else {
-                Toast.makeText(getApplicationContext(), "se necesita el permiso de la camara", Toast.LENGTH_LONG).show();
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.ejercicio1_4.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE);
             }
         }
     }
+
+    private void ClearScreen() {
+        Nombre.setText("");
+        descripcion.setText("");
+
+    }
+
+
 }
