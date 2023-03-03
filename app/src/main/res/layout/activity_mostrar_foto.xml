@@ -13,7 +13,7 @@
         android:layout_width="93dp"
 
         android:layout_height="99dp"
-        android:layout_marginBottom="84dp"
+        android:layout_marginTop="10dp"
         android:backgroundTint="#487aa1"
         android:drawableLeft="@drawable/atras"
         android:fontFamily="sans-serif-black"
@@ -26,7 +26,6 @@
         app:layout_constraintHorizontal_bias="0.094"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="1.0"
         app:rippleColor="#CBC0F5FB"
         tools:ignore="SpeakableTextPresentCheck" />
 
