@@ -2,12 +2,14 @@ package com.example.ejercicio1_4;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.ejercicio1_4.configuracion.SQLiteConexion;
@@ -22,9 +24,10 @@ public class ActivityListaFotos extends AppCompatActivity {
 
     SQLiteConexion conexion;
     ListView listView;
+    Button btnatras;
     ArrayList<Fotos> listafotos;
     ArrayList<String> ArregloFotos;
-
+    private String Dato;
 
 
     @Override
@@ -34,12 +37,44 @@ public class ActivityListaFotos extends AppCompatActivity {
 
         conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null,1);
         listView = (ListView) findViewById(R.id.txtlista);
+        btnatras= (Button) findViewById(R.id.verregistros2);
         ObtenerListadoFotos();
 
         ArrayAdapter adp = new ArrayAdapter(this, android.R.layout.simple_list_item_checked, ArregloFotos);
         listView.setAdapter(adp);
 
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        //BOTON DE MOSTRAR Imagen
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view.setSelected(true);
+                Dato = "" +listafotos.get(position).getId();
+                try {
+                    Intent intent = new Intent(getApplicationContext(), ActivityMostrarFoto.class);
+                    startActivity(intent);
+                    intent.putExtra("codigo", Dato + "");
+                    startActivity(intent);
+                } catch (NullPointerException e) {
+                    Intent intent = new Intent(getApplicationContext(), ActivityMostrarFoto.class);
+                    intent.putExtra("codigo", "1");
+                    startActivity(intent);
+                }
+
+            }
+
+        });
+        btnatras.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+
+
+        });
+
+
 
     }
 

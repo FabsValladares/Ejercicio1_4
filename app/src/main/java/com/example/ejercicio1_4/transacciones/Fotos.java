@@ -20,7 +20,6 @@ public class Fotos {
     private String descripcion;
 
     public Fotos(){
-
     }
     public Integer getId() {
         return id;
