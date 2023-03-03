@@ -15,7 +15,8 @@
         android:layout_width="93dp"
 
         android:layout_height="99dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:backgroundTint="#487aa1"
         android:drawableLeft="@drawable/atras"
         android:fontFamily="sans-serif-black"
@@ -28,7 +29,6 @@
         app:layout_constraintHorizontal_bias="0.081"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtlista"
-        app:layout_constraintVertical_bias="0.0"
         app:rippleColor="#CBC0F5FB"
         tools:ignore="SpeakableTextPresentCheck" />
 
@@ -56,7 +56,8 @@
     <ListView
         android:id="@+id/txtlista"
         android:layout_width="358dp"
-        android:layout_height="487dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="120dp"
         android:background="@color/black"
         android:backgroundTint="#FCB9D9F3"
@@ -68,6 +69,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif-black"
+        android:text="¡Seleccione un registro!"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />;
         app:layout_constraintBottom_toBottomOf="parent"
